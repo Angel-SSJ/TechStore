@@ -1,0 +1,22 @@
+@model TechStore.Models.Producto
+
+<div class="card h-100 shadow-sm product-card">
+    <img src="@Model.Imagen" class="card-img-top p-3" alt="@Model.Nombre" style="height: 200px; object-fit: contain;">
+    <div class="card-body d-flex flex-column">
+        <span class="badge bg-secondary align-self-start mb-2">@Model.Categoria</span>
+        <h5 class="card-title">@Model.Nombre</h5>
+        <p class="card-text text-muted small flex-grow-1">@Model.Descripcion</p>
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="fw-bold fs-5">@Model.Precio.ToString("C")</span>
+            @if (Model.Estado)
+            {
+                <span class="badge bg-success">Disponible</span>
+            }
+            else
+            {
+                <span class="badge bg-danger">Agotado</span>
+            }
+        </div>
+        <a asp-controller="Productos" asp-action="Detalle" asp-route-id="@Model.Id" class="btn btn-primary mt-auto">Ver detalle</a>
+    </div>
+</div>

@@ -1,0 +1,26 @@
+@model List<TechStore.Models.Categoria>
+@{
+    ViewData["Title"] = "Categorías";
+}
+
+<div class="mb-4">
+    <h1>Categorías</h1>
+    <p class="text-muted">Encuentra productos según lo que necesitas.</p>
+</div>
+
+<div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4">
+    @foreach (var categoria in Model)
+    {
+        <div class="col">
+            <a asp-controller="Categorias" asp-action="Productos" asp-route-nombre="@categoria.Nombre" class="text-decoration-none text-dark">
+                <div class="card h-100 text-center shadow-sm category-card">
+                    <div class="card-body">
+                        <i class="bi @categoria.Icono display-4 text-primary"></i>
+                        <h5 class="card-title mt-3">@categoria.Nombre</h5>
+                        <p class="card-text text-muted small">@categoria.Descripcion</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+    }
+</div>

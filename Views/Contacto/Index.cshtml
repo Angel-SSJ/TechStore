@@ -1,0 +1,61 @@
+@model TechStore.Models.ContactoViewModel
+@{
+    ViewData["Title"] = "Contáctenos";
+}
+
+<h1 class="mb-4">Contáctenos</h1>
+
+@if (TempData["MensajeEnviado"] != null)
+{
+    <div class="alert alert-success">@TempData["MensajeEnviado"]</div>
+}
+
+<div class="row g-4">
+    <div class="col-md-7">
+        <form asp-controller="Contacto" asp-action="Index" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="mb-3">
+                <label asp-for="NombreCompleto" class="form-label"></label>
+                <input asp-for="NombreCompleto" class="form-control" placeholder="Tu nombre completo" />
+                <span asp-validation-for="NombreCompleto" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Correo" class="form-label"></label>
+                <input asp-for="Correo" class="form-control" placeholder="tucorreo@ejemplo.com" />
+                <span asp-validation-for="Correo" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Asunto" class="form-label"></label>
+                <input asp-for="Asunto" class="form-control" placeholder="Asunto de tu mensaje" />
+                <span asp-validation-for="Asunto" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Mensaje" class="form-label"></label>
+                <textarea asp-for="Mensaje" class="form-control" rows="5" placeholder="Escribe tu mensaje..."></textarea>
+                <span asp-validation-for="Mensaje" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Enviar mensaje</button>
+        </form>
+    </div>
+
+    <div class="col-md-5">
+        <div class="card bg-light border-0">
+            <div class="card-body">
+                <h5 class="card-title">Información de contacto</h5>
+                <p class="card-text mb-2"><i class="bi bi-geo-alt"></i> San Salvador, El Salvador</p>
+                <p class="card-text mb-2"><i class="bi bi-telephone"></i> +503 2222-3333</p>
+                <p class="card-text mb-2"><i class="bi bi-envelope"></i> contacto@techstore.com</p>
+                <p class="card-text"><i class="bi bi-clock"></i> Lunes a Viernes, 8:00 am - 5:00 pm</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

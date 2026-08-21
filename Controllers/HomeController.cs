@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using TechStore.Data;
 using TechStore.Models;
 
 namespace TechStore.Controllers
@@ -8,7 +9,8 @@ namespace TechStore.Controllers
     {
         public IActionResult Index()
         {
-            return View();
+            var productosDestacados = TechStoreData.ProductosDestacados;
+            return View(productosDestacados);
         }
 
         public IActionResult Privacy()

@@ -1,0 +1,24 @@
+@model List<TechStore.Models.Producto>
+@{
+    ViewData["Title"] = ViewData["CategoriaNombre"]?.ToString();
+}
+
+<a asp-controller="Categorias" asp-action="Index" class="btn btn-outline-secondary btn-sm mb-3">&larr; Volver a categorías</a>
+
+<h1 class="mb-4">Categoría: @ViewData["CategoriaNombre"]</h1>
+
+@if (!Model.Any())
+{
+    <p class="text-muted">No hay productos disponibles en esta categoría.</p>
+}
+else
+{
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
+        @foreach (var producto in Model)
+        {
+            <div class="col">
+                <partial name="_ProductCard" model="producto" />
+            </div>
+        }
+    </div>
+}
