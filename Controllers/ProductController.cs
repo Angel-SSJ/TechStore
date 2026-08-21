@@ -1,13 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using TechStore.Interfaces.Services;
 using TechStore.Models;
 using TechStore.Models.DTOs;
 
 namespace TechStore.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class ProductController : ControllerBase
+    public class ProductController : Controller
     {
         private readonly IProductService _productService;
         private readonly IProductImageStorageService _productImageStorageService;
@@ -23,11 +22,12 @@ namespace TechStore.Controllers
             _categoryService = categoryService ?? throw new ArgumentNullException(nameof(categoryService));
         }
 
+        // GET: /Product
         [HttpGet]
-        public async Task<IActionResult> GetAll(
-            [FromQuery] string? searchTerm = null,
-            [FromQuery] Guid? categoryId = null,
-            [FromQuery] bool includeInactive = false)
+        public async Task<IActionResult> Index(
+            string? searchTerm = null,
+            Guid? categoryId = null,
+            bool includeInactive = false)
         {
             IList<Product> products;
 
@@ -44,70 +44,51 @@ namespace TechStore.Controllers
                 products = await _productService.GetAllActiveAsync();
             }
 
+            var categories = await _categoryService.GetAllActiveAsync();
+            ViewBag.Categories = new SelectList(categories, "Id", "Name", categoryId);
+            ViewBag.SearchTerm = searchTerm;
+            ViewBag.CategoryId = categoryId;
+            ViewBag.IncludeInactive = includeInactive;
+
             var result = products.Select(MapToDetailDto).ToList();
-            return Ok(result);
+            return View(result);
         }
 
-        [HttpGet("active")]
-        public async Task<IActionResult> GetActive()
-        {
-            var products = await _productService.GetAllActiveAsync();
-            return Ok(products.Select(MapToDetailDto).ToList());
-        }
-
-        [HttpGet("inactive")]
-        public async Task<IActionResult> GetInactive()
-        {
-            var products = await _productService.GetAllInactiveAsync();
-            return Ok(products.Select(MapToDetailDto).ToList());
-        }
-
-        [HttpGet("{id:guid}")]
-        public async Task<IActionResult> GetById(Guid id)
+        // GET: /Product/Details/{id}
+        [HttpGet]
+        public async Task<IActionResult> Details(Guid id)
         {
             var product = await _productService.GetByIdAsync(id);
             if (product == null)
             {
-                return NotFound(new { message = $"Producto con ID '{id}' no encontrado." });
+                TempData["ErrorMessage"] = $"Producto con ID '{id}' no encontrado.";
+                return NotFound();
             }
 
-            return Ok(MapToDetailDto(product));
+            return View(MapToDetailDto(product));
         }
 
-        [HttpGet("by-category/{categoryId:guid}")]
-        public async Task<IActionResult> GetByCategoryId(Guid categoryId)
+        // GET: /Product/Create
+        [HttpGet]
+        public async Task<IActionResult> Create()
         {
-            var products = await _productService.GetByCategoryIdAsync(categoryId);
-            return Ok(products.Select(MapToDetailDto).ToList());
+            await PopulateCategoriesViewBag();
+            return View(new CreateProductDto());
         }
 
-        [HttpGet("search")]
-        public async Task<IActionResult> SearchByName([FromQuery] string term)
-        {
-            var products = await _productService.SearchByNameAsync(term);
-            return Ok(products.Select(MapToDetailDto).ToList());
-        }
-
-        [HttpGet("low-stock")]
-        public async Task<IActionResult> GetLowStock([FromQuery] int threshold = 5)
-        {
-            var products = await _productService.GetLowStockAsync(threshold);
-            return Ok(products.Select(MapToDetailDto).ToList());
-        }
-
+        // POST: /Product/Create
         [HttpPost]
-        [Consumes("multipart/form-data")]
-        public async Task<IActionResult> Create([FromForm] CreateProductDto dto)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(CreateProductDto dto)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                await PopulateCategoriesViewBag(dto.CategoryIds);
+                return View(dto);
             }
 
             try
             {
-                var productId = Guid.NewGuid();
-
                 var product = new Product
                 {
                     Name = dto.Name.Trim(),
@@ -131,7 +112,7 @@ namespace TechStore.Controllers
                     }
                 }
 
-                // Guardar producto primero
+                // Guardar producto
                 var createdProduct = await _productService.AddAsync(product);
 
                 // Guardar imágenes si se proporcionaron
@@ -144,29 +125,62 @@ namespace TechStore.Controllers
                     }
                 }
 
-                // Recargar producto con categorías e imágenes
-                var fullProduct = await _productService.GetByIdAsync(createdProduct.Id);
-                return CreatedAtAction(nameof(GetById), new { id = createdProduct.Id }, MapToDetailDto(fullProduct ?? createdProduct));
+                TempData["SuccessMessage"] = $"Producto '{createdProduct.Name}' creado exitosamente.";
+                return RedirectToAction(nameof(Index));
             }
             catch (ArgumentException ex)
             {
-                return BadRequest(new { message = ex.Message });
+                ModelState.AddModelError(string.Empty, ex.Message);
+                await PopulateCategoriesViewBag(dto.CategoryIds);
+                return View(dto);
             }
         }
 
-        [HttpPut("{id:guid}")]
-        [Consumes("multipart/form-data")]
-        public async Task<IActionResult> Update(Guid id, [FromForm] UpdateProductDto dto)
+        // GET: /Product/Edit/{id}
+        [HttpGet]
+        public async Task<IActionResult> Edit(Guid id)
+        {
+            var product = await _productService.GetByIdAsync(id);
+            if (product == null)
+            {
+                TempData["ErrorMessage"] = $"Producto con ID '{id}' no encontrado.";
+                return NotFound();
+            }
+
+            var dto = new UpdateProductDto
+            {
+                Name = product.Name,
+                Description = product.Description,
+                Price = product.Price,
+                Stock = product.Stock,
+                CategoryIds = product.Categories.Select(c => c.CategoryId).ToList()
+            };
+
+            ViewBag.ProductId = product.Id;
+            ViewBag.ExistingImages = product.Images.OrderBy(i => i.ImageNumber).Select(MapToImageDto).ToList();
+            await PopulateCategoriesViewBag(dto.CategoryIds);
+            return View(dto);
+        }
+
+        // POST: /Product/Edit/{id}
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(Guid id, UpdateProductDto dto)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                var existingProd = await _productService.GetByIdAsync(id);
+                ViewBag.ProductId = id;
+                ViewBag.ExistingImages = existingProd?.Images.OrderBy(i => i.ImageNumber).Select(MapToImageDto).ToList() ?? new List<ProductImageDto>();
+                await PopulateCategoriesViewBag(dto.CategoryIds);
+                return View(dto);
             }
 
             var product = await _productService.GetByIdAsync(id);
             if (product == null)
             {
-                return NotFound(new { message = $"Producto con ID '{id}' no encontrado." });
+                TempData["ErrorMessage"] = $"Producto con ID '{id}' no encontrado.";
+                return NotFound();
             }
 
             try
@@ -178,7 +192,7 @@ namespace TechStore.Controllers
 
                 await _productService.UpdateAsync(product);
 
-                // Actualizar categorías si fueron provistas
+                // Actualizar categorías
                 if (dto.CategoryIds != null)
                 {
                     await _productService.UpdateProductCategoriesAsync(id, dto.CategoryIds);
@@ -194,100 +208,114 @@ namespace TechStore.Controllers
                     }
                 }
 
-                var updatedProduct = await _productService.GetByIdAsync(id);
-                return Ok(MapToDetailDto(updatedProduct ?? product));
+                TempData["SuccessMessage"] = $"Producto '{dto.Name}' actualizado exitosamente.";
+                return RedirectToAction(nameof(Index));
             }
             catch (ArgumentException ex)
             {
-                return BadRequest(new { message = ex.Message });
+                ModelState.AddModelError(string.Empty, ex.Message);
+                ViewBag.ProductId = id;
+                ViewBag.ExistingImages = product.Images.OrderBy(i => i.ImageNumber).Select(MapToImageDto).ToList();
+                await PopulateCategoriesViewBag(dto.CategoryIds);
+                return View(dto);
             }
         }
 
-        [HttpDelete("{id:guid}")]
+        // GET: /Product/Delete/{id}
+        [HttpGet]
         public async Task<IActionResult> Delete(Guid id)
+        {
+            var product = await _productService.GetByIdAsync(id);
+            if (product == null)
+            {
+                TempData["ErrorMessage"] = $"Producto con ID '{id}' no encontrado.";
+                return NotFound();
+            }
+
+            return View(MapToDetailDto(product));
+        }
+
+        // POST: /Product/Delete/{id}
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
             try
             {
                 var deletedProduct = await _productService.DeleteAsync(id);
-                return Ok(new { message = "Producto desactivado exitosamente.", product = MapToDetailDto(deletedProduct) });
+                TempData["SuccessMessage"] = $"Producto '{deletedProduct.Name}' desactivado exitosamente.";
             }
             catch (KeyNotFoundException ex)
             {
-                return NotFound(new { message = ex.Message });
+                TempData["ErrorMessage"] = ex.Message;
             }
+
+            return RedirectToAction(nameof(Index));
         }
 
-        [HttpPost("{id:guid}/restore")]
+        // POST: /Product/Restore/{id}
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Restore(Guid id)
         {
             try
             {
                 var restoredProduct = await _productService.RestoreAsync(id);
-                var fullProduct = await _productService.GetByIdAsync(id);
-                return Ok(new { message = "Producto restaurado exitosamente.", product = MapToDetailDto(fullProduct ?? restoredProduct) });
+                TempData["SuccessMessage"] = $"Producto '{restoredProduct.Name}' restaurado exitosamente.";
             }
             catch (KeyNotFoundException ex)
             {
-                return NotFound(new { message = ex.Message });
+                TempData["ErrorMessage"] = ex.Message;
             }
+
+            return RedirectToAction(nameof(Index));
         }
 
-        // ==========================================
-        // Manejo de Imágenes
-        // ==========================================
-
-        [HttpPost("{id:guid}/images")]
-        [Consumes("multipart/form-data")]
-        public async Task<IActionResult> AddImages(Guid id, [FromForm] AddProductImagesDto dto)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var product = await _productService.GetByIdAsync(id);
-            if (product == null)
-            {
-                return NotFound(new { message = $"Producto con ID '{id}' no encontrado." });
-            }
-
-            try
-            {
-                var addedImages = new List<ProductImageDto>();
-                foreach (var file in dto.Images.Where(f => f.Length > 0))
-                {
-                    var productImage = await _productImageStorageService.SaveProductImageAsync(id, file);
-                    await _productService.AddImageToProductAsync(id, productImage);
-                    addedImages.Add(MapToImageDto(productImage));
-                }
-
-                return Ok(new { message = "Imágenes agregadas exitosamente.", images = addedImages });
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
-        }
-
-        [HttpDelete("{id:guid}/images/{imageId:guid}")]
+        // POST: /Product/{id}/DeleteImage/{imageId}
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteImage(Guid id, Guid imageId)
         {
             var product = await _productService.GetByIdAsync(id);
             if (product == null)
             {
-                return NotFound(new { message = $"Producto con ID '{id}' no encontrado." });
+                TempData["ErrorMessage"] = $"Producto con ID '{id}' no encontrado.";
+                return NotFound();
             }
 
             var removedImage = await _productService.RemoveImageFromProductAsync(id, imageId);
             if (removedImage == null)
             {
-                return NotFound(new { message = $"Imagen con ID '{imageId}' no encontrada en este producto." });
+                TempData["ErrorMessage"] = "Imagen no encontrada en este producto.";
+                return RedirectToAction(nameof(Edit), new { id });
             }
 
             // Eliminar archivo físico
             _productImageStorageService.DeleteProductImage(removedImage);
 
-            return Ok(new { message = "Imagen eliminada exitosamente.", imageId });
+            TempData["SuccessMessage"] = "Imagen eliminada exitosamente.";
+            return RedirectToAction(nameof(Edit), new { id });
+        }
+
+        // GET: /Product/LowStock
+        [HttpGet]
+        public async Task<IActionResult> LowStock(int threshold = 5)
+        {
+            var products = await _productService.GetLowStockAsync(threshold);
+            ViewBag.Threshold = threshold;
+            return View(products.Select(MapToDetailDto).ToList());
+        }
+
+        private async Task PopulateCategoriesViewBag(IEnumerable<Guid>? selectedCategoryIds = null)
+        {
+            var categories = await _categoryService.GetAllActiveAsync();
+            var selectedSet = selectedCategoryIds?.ToHashSet() ?? new HashSet<Guid>();
+            ViewBag.CategoryOptions = categories.Select(c => new SelectListItem
+            {
+                Value = c.Id.ToString(),
+                Text = c.Name,
+                Selected = selectedSet.Contains(c.Id)
+            }).ToList();
         }
 
         private static ProductDetailDto MapToDetailDto(Product product)

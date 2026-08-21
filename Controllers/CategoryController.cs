@@ -5,9 +5,7 @@ using TechStore.Models.DTOs;
 
 namespace TechStore.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class CategoryController : ControllerBase
+    public class CategoryController : Controller
     {
         private readonly ICategoryService _categoryService;
 
@@ -16,68 +14,48 @@ namespace TechStore.Controllers
             _categoryService = categoryService ?? throw new ArgumentNullException(nameof(categoryService));
         }
 
+        // GET: /Category
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] bool includeInactive = false)
+        public async Task<IActionResult> Index(bool includeInactive = false)
         {
             var categories = includeInactive
                 ? await _categoryService.GetAllAsync()
                 : await _categoryService.GetAllActiveAsync();
 
             var result = categories.Select(MapToDetailDto).ToList();
-            return Ok(result);
+            ViewBag.IncludeInactive = includeInactive;
+            return View(result);
         }
 
-        [HttpGet("active")]
-        public async Task<IActionResult> GetActive()
-        {
-            var categories = await _categoryService.GetAllActiveAsync();
-            return Ok(categories.Select(MapToDetailDto).ToList());
-        }
-
-        [HttpGet("inactive")]
-        public async Task<IActionResult> GetInactive()
-        {
-            var categories = await _categoryService.GetAllInactiveAsync();
-            return Ok(categories.Select(MapToDetailDto).ToList());
-        }
-
-        [HttpGet("{id:guid}")]
-        public async Task<IActionResult> GetById(Guid id)
+        // GET: /Category/Details/{id}
+        [HttpGet]
+        public async Task<IActionResult> Details(Guid id)
         {
             var category = await _categoryService.GetByIdAsync(id);
             if (category == null)
             {
-                return NotFound(new { message = $"Categoría con ID '{id}' no encontrada." });
+                TempData["ErrorMessage"] = $"Categoría con ID '{id}' no encontrada.";
+                return NotFound();
             }
 
-            return Ok(MapToDetailDto(category));
+            return View(MapToDetailDto(category));
         }
 
-        [HttpGet("by-name/{name}")]
-        public async Task<IActionResult> GetByName(string name)
+        // GET: /Category/Create
+        [HttpGet]
+        public IActionResult Create()
         {
-            var category = await _categoryService.GetByNameAsync(name);
-            if (category == null)
-            {
-                return NotFound(new { message = $"Categoría con nombre '{name}' no encontrada." });
-            }
-
-            return Ok(MapToDetailDto(category));
+            return View(new CreateCategoryDto());
         }
 
-        [HttpGet("exists/{name}")]
-        public async Task<IActionResult> ExistsByName(string name)
-        {
-            var exists = await _categoryService.ExistsByNameAsync(name);
-            return Ok(new { name, exists });
-        }
-
+        // POST: /Category/Create
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateCategoryDto dto)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(CreateCategoryDto dto)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return View(dto);
             }
 
             try
@@ -88,70 +66,123 @@ namespace TechStore.Controllers
                 };
 
                 var createdCategory = await _categoryService.AddAsync(category);
-                return CreatedAtAction(nameof(GetById), new { id = createdCategory.Id }, MapToDetailDto(createdCategory));
+                TempData["SuccessMessage"] = $"Categoría '{createdCategory.Name}' creada exitosamente.";
+                return RedirectToAction(nameof(Index));
             }
             catch (InvalidOperationException ex)
             {
-                return Conflict(new { message = ex.Message });
+                ModelState.AddModelError("Name", ex.Message);
+                return View(dto);
             }
             catch (ArgumentException ex)
             {
-                return BadRequest(new { message = ex.Message });
+                ModelState.AddModelError(string.Empty, ex.Message);
+                return View(dto);
             }
         }
 
-        [HttpPut("{id:guid}")]
-        public async Task<IActionResult> Update(Guid id, [FromBody] UpdateCategoryDto dto)
+        // GET: /Category/Edit/{id}
+        [HttpGet]
+        public async Task<IActionResult> Edit(Guid id)
+        {
+            var category = await _categoryService.GetByIdAsync(id);
+            if (category == null)
+            {
+                TempData["ErrorMessage"] = $"Categoría con ID '{id}' no encontrada.";
+                return NotFound();
+            }
+
+            var dto = new UpdateCategoryDto
+            {
+                Name = category.Name
+            };
+
+            ViewBag.CategoryId = id;
+            ViewBag.CategoryName = category.Name;
+            return View(dto);
+        }
+
+        // POST: /Category/Edit/{id}
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(Guid id, UpdateCategoryDto dto)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                ViewBag.CategoryId = id;
+                return View(dto);
             }
 
             var category = await _categoryService.GetByIdAsync(id);
             if (category == null)
             {
-                return NotFound(new { message = $"Categoría con ID '{id}' no encontrada." });
+                TempData["ErrorMessage"] = $"Categoría con ID '{id}' no encontrada.";
+                return NotFound();
             }
 
             try
             {
                 category.Name = dto.Name.Trim();
-                var updatedCategory = await _categoryService.UpdateAsync(category);
-                return Ok(MapToDetailDto(updatedCategory));
+                await _categoryService.UpdateAsync(category);
+                TempData["SuccessMessage"] = $"Categoría '{dto.Name}' actualizada exitosamente.";
+                return RedirectToAction(nameof(Index));
             }
             catch (ArgumentException ex)
             {
-                return BadRequest(new { message = ex.Message });
+                ModelState.AddModelError(string.Empty, ex.Message);
+                ViewBag.CategoryId = id;
+                return View(dto);
             }
         }
 
-        [HttpDelete("{id:guid}")]
+        // GET: /Category/Delete/{id}
+        [HttpGet]
         public async Task<IActionResult> Delete(Guid id)
+        {
+            var category = await _categoryService.GetByIdAsync(id);
+            if (category == null)
+            {
+                TempData["ErrorMessage"] = $"Categoría con ID '{id}' no encontrada.";
+                return NotFound();
+            }
+
+            return View(MapToDetailDto(category));
+        }
+
+        // POST: /Category/Delete/{id}
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
             try
             {
                 var deletedCategory = await _categoryService.DeleteAsync(id);
-                return Ok(new { message = "Categoría desactivada exitosamente.", category = MapToDetailDto(deletedCategory) });
+                TempData["SuccessMessage"] = $"Categoría '{deletedCategory.Name}' desactivada exitosamente.";
             }
             catch (KeyNotFoundException ex)
             {
-                return NotFound(new { message = ex.Message });
+                TempData["ErrorMessage"] = ex.Message;
             }
+
+            return RedirectToAction(nameof(Index));
         }
 
-        [HttpPost("{id:guid}/restore")]
+        // POST: /Category/Restore/{id}
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Restore(Guid id)
         {
             try
             {
                 var restoredCategory = await _categoryService.RestoreAsync(id);
-                return Ok(new { message = "Categoría restaurada exitosamente.", category = MapToDetailDto(restoredCategory) });
+                TempData["SuccessMessage"] = $"Categoría '{restoredCategory.Name}' restaurada exitosamente.";
             }
             catch (KeyNotFoundException ex)
             {
-                return NotFound(new { message = ex.Message });
+                TempData["ErrorMessage"] = ex.Message;
             }
+
+            return RedirectToAction(nameof(Index));
         }
 
         private static CategoryDetailDto MapToDetailDto(Category category)
