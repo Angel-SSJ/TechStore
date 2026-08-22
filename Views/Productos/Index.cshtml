@@ -3,12 +3,17 @@
     ViewData["Title"] = "Productos";
 }
 
-<div class="mb-4">
+<div class="contenedor-inicio-p mb-4 text-white rounded-3 hero-section py-3">
     <h1>Nuestros Productos</h1>
-    <p class="text-muted">Explora el catálogo completo de TechStore.</p>
+    <p class="text-white">Explora el catálogo completo de TechStore.</p>
 </div>
 
-<div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
+<img class="componente-decorativo" src="~/Images/Componentes/descargam - copia.jpeg" alt="componente1" />
+
+<hr />
+
+
+<div class="tarjetas-producto row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
     @foreach (var producto in Model)
     {
         <div class="col">

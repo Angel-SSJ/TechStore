@@ -2,8 +2,12 @@
 @{
     ViewData["Title"] = "Contáctenos";
 }
+<div class="contacto-titulo mb-4 text-white rounded-3 hero-section py-3">
+    <h1>Contáctenos</h1>
+</div>
 
-<h1 class="mb-4">Contáctenos</h1>
+
+<img class="componente-decorativo" src="~/Images/Componentes/descargam - copia.jpeg" alt="componente1" />
 
 @if (TempData["MensajeEnviado"] != null)
 {
@@ -55,6 +59,10 @@
         </div>
     </div>
 </div>
+
+<br />
+<br />
+<br />
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

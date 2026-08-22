@@ -2,9 +2,13 @@
     ViewData["Title"] = "Acerca de nosotros";
 }
 
-<h1 class="mb-4">Acerca de nosotros</h1>
+<div class="acerca-title mb-4 text-white rounded-3 hero-section py-3">
+    <h1>Acerca de nosotros</h1>
+</div>
 
-<section class="mb-5">
+<img class="componente-decorativo" src="~/Images/Componentes/descargam - copia.jpeg" alt="componente1" />
+
+<section class="seccion-acerca">
     <h2>Nuestra Historia</h2>
     <p>
         TechStore nació con la idea de acercar la tecnología a todas las personas, ofreciendo productos
@@ -13,49 +17,82 @@
     </p>
 </section>
 
-<div class="row g-4 mb-5">
-    <div class="col-md-6">
-        <div class="card h-100 border-0 bg-light">
-            <div class="card-body">
-                <h2 class="h4"><i class="bi bi-bullseye text-primary"></i> Misión</h2>
-                <p class="card-text">
-                    Ofrecer productos tecnológicos de calidad, con un servicio cercano y confiable,
-                    ayudando a nuestros clientes a mantenerse conectados con las últimas tendencias.
-                </p>
-            </div>
+<div class="contenedor-acerca">
+    <div class="vision-clase">
+        <h2 class=""><i class="bi bi-eye text-primary"></i> Visión</h2>
+        <p class="card-text">
+            Ser la tienda de tecnología de referencia a nivel nacional, reconocida por su innovación,
+            calidad de servicio y compromiso con sus clientes.
+        </p>
+    </div>
+    <div class="mision-clase">
+        <h2 class=""><i class="bi bi-bullseye text-primary"></i> Misión</h2>
+        <p class="">
+            Ofrecer productos tecnológicos de calidad, con un servicio cercano y confiable,
+            ayudando a nuestros clientes a mantenerse conectados con las últimas tendencias.
+        </p>
+    </div>
+</div>
+
+
+
+<section class="seccion-valores">
+    <h2>Nuestros Valores</h2>
+    <div>
+        <div class="valores-1">
+            <i class="bi bi-shield-check display-6 text-primary"></i>
+            <p>Confianza</p>
+        </div>
+        <div class="valores-2">
+            <i class="bi bi-lightning-charge display-6 text-primary"></i>
+            <p>Innovación</p>
+        </div>
+        <div class="valores-3">
+            <i class="bi bi-people display-6 text-primary"></i>
+            <p>Cercanía</p>
+        </div>
+        <div class="valores-4">
+            <i class="bi bi-award display-6 text-primary"></i>
+            <p >Calidad</p>
         </div>
     </div>
-    <div class="col-md-6">
-        <div class="card h-100 border-0 bg-light">
-            <div class="card-body">
-                <h2 class="h4"><i class="bi bi-eye text-primary"></i> Visión</h2>
-                <p class="card-text">
-                    Ser la tienda de tecnología de referencia a nivel nacional, reconocida por su innovación,
-                    calidad de servicio y compromiso con sus clientes.
-                </p>
-            </div>
+</section>
+
+<div class="acordion-index accordion accordion-flush" id="accordionFlushExample">
+    <div class="accordion-item">
+        <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+                ¿Desde cuándo opera TechStore?
+            </button>
+        </h2>
+        <div id="flush-collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+            <div class="accordion-body">TechStore nació en 2020 como un pequeño emprendimiento local y desde entonces hemos crecido gracias a la confianza de nuestros clientes, ampliando nuestro catálogo cada año.</div>
+        </div>
+    </div>
+    <div class="accordion-item">
+        <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
+                ¿Los productos tienen garantía?
+            </button>
+        </h2>
+        <div id="flush-collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+            <div class="accordion-body">Sí, todos nuestros productos cuentan con garantía del fabricante. El tiempo exacto varía según la categoría, y puedes consultarlo directamente en la ficha de cada producto.</div>
+        </div>
+    </div>
+    <div class="accordion-item">
+        <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseThree" aria-expanded="false" aria-controls="flush-collapseThree">
+                ¿Realizan envíos a todo el país?
+            </button>
+        </h2>
+        <div id="flush-collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+            <div class="accordion-body">Así es, realizamos envíos a nivel nacional. Los tiempos de entrega dependen de la zona, pero normalmente oscilan entre 1 y 3 días hábiles.</div>
         </div>
     </div>
 </div>
 
-<section>
-    <h2 class="mb-3">Nuestros Valores</h2>
-    <div class="row row-cols-2 row-cols-md-4 g-3 text-center">
-        <div class="col">
-            <i class="bi bi-shield-check display-6 text-primary"></i>
-            <p class="mt-2 mb-0 fw-semibold">Confianza</p>
-        </div>
-        <div class="col">
-            <i class="bi bi-lightning-charge display-6 text-primary"></i>
-            <p class="mt-2 mb-0 fw-semibold">Innovación</p>
-        </div>
-        <div class="col">
-            <i class="bi bi-people display-6 text-primary"></i>
-            <p class="mt-2 mb-0 fw-semibold">Cercanía</p>
-        </div>
-        <div class="col">
-            <i class="bi bi-award display-6 text-primary"></i>
-            <p class="mt-2 mb-0 fw-semibold">Calidad</p>
-        </div>
-    </div>
-</section>
+<br />
+<br />
+<img class="logo" src="~/Images/Componentes/logo.png" alt="imagenlogo"/>
+<br />
+<br />

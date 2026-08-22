@@ -3,27 +3,29 @@
     ViewData["Title"] = Model.Nombre;
 }
 
-<a asp-controller="Productos" asp-action="Index" class="btn btn-outline-secondary btn-sm mb-3">&larr; Volver a productos</a>
+<a asp-controller="Productos" asp-action="Index" class="boton-product btn btn-outline-primary btn-sm mb-4">&larr; Volver a productos</a>
 
-<div class="row g-4">
-    <div class="col-md-5">
-        <img src="@Model.Imagen" class="img-fluid border rounded p-3" alt="@Model.Nombre">
-    </div>
-    <div class="col-md-7">
-        <span class="badge bg-secondary mb-2">@Model.Categoria</span>
-        <h1>@Model.Nombre</h1>
-        <p class="lead">@Model.Descripcion</p>
-        <h3 class="text-primary">@Model.Precio.ToString("C")</h3>
-        <p>
-            @if (Model.Estado)
-            {
-                <span class="badge bg-success">Disponible</span>
-                <span class="text-muted ms-2">Stock: @Model.Stock unidades</span>
-            }
-            else
-            {
-                <span class="badge bg-danger">Agotado</span>
-            }
-        </p>
+<div class="contenedor-detalles">
+    <div class="categorias-p row g-4">
+        <div class="col-md-5">
+            <img src="@Model.Imagen" class="img-fluid border rounded p-3" alt="@Model.Nombre">
+        </div>
+        <div class="col-md-7">
+            <span class="badge bg-secondary mb-2">@Model.Categoria</span>
+            <h1>@Model.Nombre</h1>
+            <p class="lead">@Model.Descripcion</p>
+            <h3 class="text-primary">@Model.Precio.ToString("C")</h3>
+            <p>
+                @if (Model.Estado)
+                {
+                    <span class="badge bg-success">Disponible</span>
+                    <span class="text-muted ms-2">Stock: @Model.Stock unidades</span>
+                }
+                else
+                {
+                    <span class="badge bg-danger">Agotado</span>
+                }
+            </p>
+        </div>
     </div>
 </div>
