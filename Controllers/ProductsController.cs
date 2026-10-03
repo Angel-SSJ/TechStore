@@ -89,7 +89,7 @@ namespace TechStore.Controllers
                 return NotFound();
             }
 
-            ViewBag.Categories = await _categoryService.GetAllActiveAsync();
+            ViewBag.Categories = await _categoryService.GetAllAsync();
             return View(product);
         }
 
@@ -151,6 +151,7 @@ namespace TechStore.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Deactivate(Guid id)
         {
             await _productLifecycle.DeleteAsync(id);
@@ -158,6 +159,7 @@ namespace TechStore.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Restore(Guid id)
         {
             await _productLifecycle.RestoreAsync(id);

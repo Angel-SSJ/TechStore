@@ -1,0 +1,49 @@
+@model IEnumerable<TechStore.Models.Category>
+
+@{
+    ViewData["Title"] = "Listado de Categorías";
+}
+
+<h1 class="Listado-libros">@ViewData["Title"]</h1>
+
+<p>Hay @Model.Count() categorías disponibles.</p>
+
+<a class="boton-libros btn btn-primary mb-5" asp-action="Create">Agregar categoría</a>
+
+@if (TempData["CategorySuccess"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["CategorySuccess"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+    </div>
+}
+@if (TempData["CategoryError"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["CategoryError"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+    </div>
+}
+
+<div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
+    @foreach (var categoria in Model)
+    {
+        <div class="col">
+            <div class="tarjeta-libro card h-100 shadow-sm">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title text-center">@categoria.Name</h5>
+                    <p class="card-text text-muted small flex-grow-1">
+                        Descripción: @categoria.Description
+                    </p>
+                    <p class="card-text text-muted small flex-grow-1">
+                        Productos: @categoria.Products.Count
+                    </p>
+                    <p class="card-text text-muted small">
+                        Estado: @(categoria.IsActive ? "Activa" : "Inactiva")
+                    </p>
+                    <a asp-action="Details" class="btn btn-secondary" asp-route-id="@categoria.Id">Ver</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>

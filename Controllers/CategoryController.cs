@@ -48,13 +48,13 @@ namespace TechStore.Controllers
             if (!ModelState.IsValid)
             {
                 ViewBag.Products = await _productQueries.GetAllAsync();
-                return View(new Category(category.Name, category.Description, category.IsActive));
+                return View(category);
             }
 
             try
             {
                 var createdCategory = await _categoryApplication.CreateAsync(category, selectedProductIds);
-                TempData["Success"] = "Categoría creada correctamente.";
+                TempData["CategorySuccess"] = "Categoría creada correctamente.";
                 return RedirectToAction(nameof(Edit), new
                 {
                     id = createdCategory.Id
@@ -64,7 +64,7 @@ namespace TechStore.Controllers
             {
                 ModelState.AddModelError(nameof(category.Name), ex.Message);
                 ViewBag.Products = await _productQueries.GetAllAsync();
-                return View(new Category(category.Name, category.Description, category.IsActive));
+                return View(category);
             }
         }
 
@@ -105,7 +105,7 @@ namespace TechStore.Controllers
                     return NotFound();
                 }
 
-                TempData["Success"] = "Categoría actualizada correctamente.";
+                TempData["CategorySuccess"] = "Categoría actualizada correctamente.";
                 return RedirectToAction(nameof(Edit), new
                 {
                     id
@@ -132,7 +132,7 @@ namespace TechStore.Controllers
         {
             if (!await _categoryLifecycle.DeleteAsync(id))
             {
-                TempData["Error"] = "No se puede desactivar una categoría relacionada con productos.";
+                TempData["CategoryError"] = "No se puede desactivar una categoría relacionada con productos.";
             }
 
             return RedirectToAction(nameof(Index));

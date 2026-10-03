@@ -1,0 +1,54 @@
+@model TechStore.DTOs.CategoryInput
+
+@{
+    ViewData["Title"] = "Crear nueva categoría";
+    var products = ViewBag.Products as IEnumerable<TechStore.Models.Product> ?? Enumerable.Empty<TechStore.Models.Product>();
+}
+
+<h1 class="mb-5">Crear nueva categoría</h1>
+
+<form asp-action="Create" method="post">
+    <div class="row">
+        <div class="col-md-12">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-4"></div>
+
+            <div class="mb-5">
+                <label asp-for="Name">Nombre</label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name"></span>
+            </div>
+
+            <div class="mb-5">
+                <label asp-for="Description">Descripción</label>
+                <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                <span asp-validation-for="Description"></span>
+            </div>
+
+            <div class="form-check mb-5">
+                <input asp-for="IsActive" class="form-check-input" />
+                <label asp-for="IsActive" class="form-check-label">Activo</label>
+            </div>
+
+            <div class="mb-5">
+                <label>Productos</label>
+                <select name="selectedProductIds" multiple class="form-control">
+                    @foreach (var product in products)
+                    {
+                        <option value="@product.Id">@product.Name</option>
+                    }
+                </select>
+            </div>
+
+            <div class="d-flex gap-2">
+                <div class="mb-5">
+                    <button type="submit" class="btn btn-success">Crear</button>
+                    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

@@ -22,6 +22,11 @@ namespace TechStore.Data
                 .Property(product => product.Price)
                 .HasPrecision(18, 2);
 
+            modelBuilder.Entity<Category>()
+                .HasMany(category => category.Products)
+                .WithMany(product => product.Categories)
+                .UsingEntity(join => join.ToTable("CategoryProduct"));
+
             modelBuilder.Entity<ProductImage>()
                 .HasOne(pi => pi.Product)
                 .WithMany(p => p.Images)
