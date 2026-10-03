@@ -2,37 +2,54 @@
 
 @{
     ViewData["Title"] = "Detalles de la categoría";
+    var producto = ViewBag.Products as IEnumerable<TechStore.Models.Product>
+        ?? Enumerable.Empty<TechStore.Models.Product>();
 }
-
-<h1>Detalles de la categoría</h1>
+<div class="titulo-nuevo mb-4 text-white rounded-3 hero-section py-3">
+    <h1>Detalles de la categoría</h1>
+</div>
 
 <div class="row">
-    <div class="col-md-7">
-        <h3>@Model.Name</h3>
-        <p class="text-muted">@Model.Description</p>
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body shadow-sm">
+                <h3 style="color: midnightblue;" class="fw-bold text-uppercase">@Model.Name</h3>
+                <p class="text-muted">@Model.Description</p>
 
-        <dl class="row">
-            <dt class="col-sm-4">Activo</dt>
-            <dd class="col-sm-8">@Model.IsActive</dd>
+                <dl class="row">
+                    @if (Model.IsActive)
+                    {
+                        <dt class ="col-sm-4">Activo</dt>
+                        <dd class="col-sm-8 fw-bold" style="color:dodgerblue;">@Model.IsActive</dd>
+                    }
+                    else
+                    {
+                        <dt class="col-sm-4">Activo</dt>
+                        <dd class="col-sm-8 fw-bold" style="color:slategrey;">@Model.IsActive</dd>
+                    }
 
-            <dt class="col-sm-4">Productos</dt>
-            <dd class="col-sm-8">@Model.Products.Count</dd>
+                    <dt class="col-sm-4">Productos</dt>
+                    <dd class="col-sm-8 fw-semibold">@Model.Products.Count</dd>
 
-            <dt class="col-sm-4">Fecha de creación</dt>
-            <dd class="col-sm-8">@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</dd>
-        </dl>
+                    <dt class="col-sm-4">Fecha de creación</dt>
+                    <dd class="col-sm-8 fw-semibold">@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</dd>
+                </dl>
+            </div>
+        </div>
     </div>
 </div>
 
-<h4 class="mt-4">Productos de la categoría</h4>
+<h4 class="mt-4" style="color: midnightblue;margin-bottom:15px;">Productos de la categoría</h4>
 @if (Model.Products.Any())
 {
     <ul class="list-group mb-3">
         @foreach (var product in Model.Products)
         {
-            <li class="list-group-item">@product.Name</li>
+            <li class ="list-group-item">@product.Name</li>
+            <a asp-controller="Products" asp-action="Details" asp-route-id="@product.Id" class="btn btn-outline-primary mb-3">Ir</a>
         }
     </ul>
+    
 }
 else
 {

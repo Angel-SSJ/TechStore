@@ -8,7 +8,9 @@
         : null;
 }
 
-<h1>Detalles del producto</h1>
+<div class="titulo-nuevo mb-4 text-white rounded-3 hero-section py-3">
+    <h1>Detalles del producto</h1>
+</div>
 
 <div class="row">
 
@@ -32,84 +34,88 @@
 
     <div class="col-md-7">
 
-        <h3>@Model.Name</h3>
+        <div class="card">
+            <div class="card-body shadow-sm">
+                <h3 style="color: midnightblue;" class="fw-bold text-uppercase">@Model.Name</h3>
 
-        <p class="text-muted">
-            @Model.Description
-        </p>
+                <p class="text-muted">
+                    @Model.Description
+                </p>
 
-        <dl class="row">
+                <dl class="row">
 
-            <dt class="col-sm-4">
-                Precio
-            </dt>
+                    <dt class="col-sm-4">
+                        Precio
+                    </dt>
 
-            <dd class="col-sm-8">
-                @Model.Price.ToString("C2")
-            </dd>
+                    <dd class="col-sm-8">
+                        @Model.Price.ToString("C2")
+                    </dd>
 
-            <dt class="col-sm-4">
-                Stock
-            </dt>
+                    <dt class="col-sm-4">
+                        Stock
+                    </dt>
 
-            <dd class="col-sm-8">
-                @Model.Stock
-            </dd>
+                    <dd class="col-sm-8">
+                        @Model.Stock
+                    </dd>
 
-            <dt class="col-sm-4">
-                Destacado
-            </dt>
+                    <dt class="col-sm-4">
+                        Destacado
+                    </dt>
 
-            <dd class="col-sm-8">
-                @(Model.Featured ? "Sí" : "No")
-            </dd>
+                    <dd class="col-sm-8">
+                        @(Model.Featured ? "Sí" : "No")
+                    </dd>
 
-            <dt class="col-sm-4">
-                Estado
-            </dt>
+                    <dt class="col-sm-4">
+                        Estado
+                    </dt>
 
-            <dd class="col-sm-8">
+                    <dd class="col-sm-8">
 
-                @if (Model.IsActive)
-                {
-                    <span class="badge bg-success">
-                        Activo
-                    </span>
-                }
-                else
-                {
-                    <span class="badge bg-secondary">
-                        Inactivo
-                    </span>
-                }
+                        @if (Model.IsActive)
+                        {
+                            <span class="badge bg-success">
+                                Activo
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">
+                                Inactivo
+                            </span>
+                        }
 
-            </dd>
+                    </dd>
 
-            <dt class="col-sm-4">
-                Categorías
-            </dt>
+                    <dt class="col-sm-4">
+                        Categorías
+                    </dt>
 
-            <dd class="col-sm-8">
+                    <dd class="col-sm-8">
 
-                @if (Model.Categories != null && Model.Categories.Any())
-                {
-                    @foreach (var cat in Model.Categories)
-                    {
-                        <span class="badge bg-primary me-1">
-                            @cat.Name
-                        </span>
-                    }
-                }
-                else
-                {
-                    <span class="text-muted">
-                        Sin categorías
-                    </span>
-                }
+                        @if (Model.Categories != null && Model.Categories.Any())
+                        {
+                            @foreach (var cat in Model.Categories)
+                            {
+                                <span class="badge bg-primary me-1">
+                                    @cat.Name
+                                </span>
+                            }
+                        }
+                        else
+                        {
+                            <span class="text-muted">
+                                Sin categorías
+                            </span>
+                        }
 
-            </dd>
+                    </dd>
 
-        </dl>
+                </dl>
+            </div>
+        </div>
 
     </div>
 
@@ -123,7 +129,7 @@
         Editar
     </a>
 
-    <a class="btn btn-secondary"
+    <a class="btn btn-outline-primary"
        asp-action="Index">
         Volver
     </a>

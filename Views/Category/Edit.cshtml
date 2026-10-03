@@ -5,7 +5,9 @@
     var products = ViewBag.Products as IEnumerable<TechStore.Models.Product> ?? Enumerable.Empty<TechStore.Models.Product>();
 }
 
-<h1 class="mb-5">Editar categoría</h1>
+<div class="titulo-nuevo mb-4 text-white rounded-3 hero-section py-3">
+    <h1>Editar categoría</h1>
+</div>
 
 @if (TempData["CategorySuccess"] != null)
 {

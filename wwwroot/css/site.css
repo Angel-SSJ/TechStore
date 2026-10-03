@@ -42,7 +42,8 @@ body {
 
 /*Inicio*/
 .contenedor-inicio {
-     background: linear-gradient(to bottom right, blue, pink);
+    background: linear-gradient(to bottom right, blue, pink);
+
 }
 
 .contenedor-inicio h1 {
@@ -247,3 +248,12 @@ acordion-index {
     margin-top: 50px;
 }
 
+.titulo-nuevo{
+    background: linear-gradient(to bottom right, blue, pink);
+ 
+}
+
+.titulo-nuevo h1{
+    background: linear-gradient(to bottom right, blue, pink);
+    margin-left: 50px;
+}

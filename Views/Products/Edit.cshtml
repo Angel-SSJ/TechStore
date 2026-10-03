@@ -7,7 +7,9 @@
         ?? Enumerable.Empty<TechStore.Models.Category>();
 }
 
-<h1 class="mb-5">Editar producto</h1>
+<div class="titulo-nuevo mb-4 text-white rounded-3 hero-section py-3">
+    <h1>Editar producto</h1>
+</div>
 
 @if (TempData["Success"] != null)
 {
@@ -133,12 +135,12 @@
                 <div class="mb-5">
 
                     <button type="submit"
-                            class="btn btn-success">
+                            class="btn btn-primary">
                         Guardar cambios
                     </button>
 
                     <a asp-action="Index"
-                       class="btn btn-secondary">
+                       class="btn btn-outline-primary">
                         Cancelar
                     </a>
 

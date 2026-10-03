@@ -5,7 +5,10 @@
     var categories = ViewBag.Categories as IEnumerable<TechStore.Models.Category>;
 }
 
-<h1 class="mb-5">Crear nuevo producto</h1>
+<div class="titulo-nuevo mb-4 text-white rounded-3 hero-section py-3">
+    <h1>Crear nuevo producto</h1>
+</div>
+
 
 <form asp-action="Create" method="Post" enctype="multipart/form-data">
     <div class="row">

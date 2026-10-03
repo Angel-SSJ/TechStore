@@ -4,9 +4,12 @@
     ViewData["Title"] = "Productos";
 }
 
+<div class="titulo-nuevo mb-4 text-white rounded-3 hero-section py-3">
+    <h1>Productos</h1>
+</div>
+
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-        <h1 class="mb-1">Productos</h1>
         <p class="text-muted mb-0">
             Administración de productos de TechStore
         </p>
@@ -19,6 +22,8 @@
         Nuevo producto
     </a>
 </div>
+
+<img class="componente-decorativo" src="~/Images/Componentes/descargam - copia.jpeg" alt="componente1" />
 
 @if (Model == null || !Model.Any())
 {
@@ -63,7 +68,7 @@ else
                             {
                                 @foreach (var category in product.Categories)
                                 {
-                                    <span class="badge bg-secondary me-1">
+                                    <span class="badge bg-primary me-1">
                                         @category.Name
                                     </span>
                                 }
@@ -125,7 +130,7 @@ else
                             <a asp-controller="Products"
                                asp-action="Edit"
                                asp-route-id="@product.Id"
-                               class="btn btn-outline-secondary">
+                               class="btn btn-outline-primary">
                                 <i class="bi bi-pencil"></i>
                                 Editar
                             </a>
