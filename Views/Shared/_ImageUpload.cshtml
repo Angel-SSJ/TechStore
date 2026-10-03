@@ -1,0 +1,38 @@
+@{
+    var action = ViewData["ImageUploadAction"] as string ?? "AddImages";
+    object pidObj = ViewData["ProductId"];
+    Guid? productId = null;
+    if (pidObj is Guid g) productId = g;
+    else if (pidObj is string s && Guid.TryParse(s, out var gp)) productId = gp;
+}
+
+<form asp-action="@action" asp-controller="Products" method="post" enctype="multipart/form-data" class="image-upload-form">
+    @Html.AntiForgeryToken()
+    @if (productId != null)
+    {
+        <input type="hidden" name="id" value="@productId" />
+    }
+
+    <div class="mb-3">
+        <label for="images" class="form-label">Seleccionar imágenes</label>
+        <input type="file" id="images" name="images" multiple accept="image/*" class="form-control" />
+        <div class="form-text">Puedes seleccionar varias imágenes (PNG, JPG, GIF...).</div>
+    </div>
+
+    <div class="d-flex align-items-center">
+        <button type="submit" class="btn btn-primary">Subir imágenes</button>
+        <small id="images-count" class="ms-3 text-muted"></small>
+    </div>
+</form>
+
+<script>
+    (function(){
+        var input = document.getElementById('images');
+        var counter = document.getElementById('images-count');
+        if (!input || !counter) return;
+        input.addEventListener('change', function(){
+            var n = input.files ? input.files.length : 0;
+            counter.textContent = n > 0 ? n + ' archivo(s) seleccionado(s)' : '';
+        });
+    })();
+</script>
