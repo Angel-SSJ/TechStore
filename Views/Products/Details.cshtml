@@ -16,7 +16,7 @@
 
         @if (primaryImage != null)
         {
-            <img src="@Url.Content("~/" + primaryImage.ImagePath)"
+            <img src="/@primaryImage.ImagePath"
                  alt="@Model.Name"
                  class="img-fluid"
                  style="width: 100%; max-height: 400px; object-fit: contain;" />
@@ -43,6 +43,7 @@
             <dt class="col-sm-4">
                 Precio
             </dt>
+
             <dd class="col-sm-8">
                 @Model.Price.ToString("C2")
             </dd>
@@ -50,6 +51,7 @@
             <dt class="col-sm-4">
                 Stock
             </dt>
+
             <dd class="col-sm-8">
                 @Model.Stock
             </dd>
@@ -57,6 +59,7 @@
             <dt class="col-sm-4">
                 Destacado
             </dt>
+
             <dd class="col-sm-8">
                 @(Model.Featured ? "Sí" : "No")
             </dd>
@@ -64,6 +67,7 @@
             <dt class="col-sm-4">
                 Estado
             </dt>
+
             <dd class="col-sm-8">
 
                 @if (Model.IsActive)
@@ -84,6 +88,7 @@
             <dt class="col-sm-4">
                 Categorías
             </dt>
+
             <dd class="col-sm-8">
 
                 @if (Model.Categories != null && Model.Categories.Any())

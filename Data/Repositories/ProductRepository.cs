@@ -28,9 +28,9 @@ namespace TechStore.Data.Repositories
         public override async Task<IList<Product>> GetAllAsync()
         {
             return await _context.Products
-            .Include(product => product.Categories)
+                .Include(product => product.Categories)
+                .Include(product => product.Images)
                 .ToListAsync();
         }
-
     }
 }

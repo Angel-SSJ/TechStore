@@ -1,22 +1,93 @@
-@model TechStore.Models.Producto
+@model TechStore.Models.Product
+
+@{
+    var primaryImage = Model.Images != null && Model.Images.Any()
+        ? Model.Images
+            .OrderBy(image => image.ImageNumber)
+            .FirstOrDefault()
+        : null;
+
+    string? imagePath = null;
+
+    if (primaryImage != null)
+    {
+        imagePath = primaryImage.ImagePath.Replace("\\", "/");
+
+        if (!imagePath.StartsWith("/"))
+        {
+            imagePath = "/" + imagePath;
+        }
+    }
+
+    var categoryName = Model.Categories != null &&
+                       Model.Categories.Any()
+        ? string.Join(", ", Model.Categories.Select(c => c.Name))
+        : "Sin categoría";
+}
 
 <div class="card h-100 shadow-sm product-card">
-    <img src="@Model.Imagen" class="card-img-top p-3" alt="@Model.Nombre" style="height: 200px; object-fit: contain;">
+
+    @if (!string.IsNullOrEmpty(imagePath))
+    {
+        <img src="@imagePath"
+             class="card-img-top p-3"
+             alt="@Model.Name"
+             style="height: 200px; object-fit: contain;" />
+    }
+    else
+    {
+        <div class="d-flex justify-content-center align-items-center bg-light text-muted"
+             style="height: 200px;">
+
+            <span>Sin imagen</span>
+
+        </div>
+    }
+
     <div class="card-body d-flex flex-column">
-        <span class="badge bg-secondary align-self-start mb-2">@Model.Categoria</span>
-        <h5 class="card-title">@Model.Nombre</h5>
-        <p class="card-text text-muted small flex-grow-1">@Model.Descripcion</p>
+
+        <span class="badge bg-secondary align-self-start mb-2">
+            @categoryName
+        </span>
+
+        <h5 class="card-title">
+            @Model.Name
+        </h5>
+
+        <p class="card-text text-muted small flex-grow-1">
+            @Model.Description
+        </p>
+
         <div class="d-flex justify-content-between align-items-center mb-2">
-            <span class="fw-bold fs-5">@Model.Precio.ToString("C")</span>
-            @if (Model.Estado)
+
+            <span class="fw-bold fs-5">
+                @Model.Price.ToString("C")
+            </span>
+
+            @if (Model.IsActive && Model.Stock > 0)
             {
-                <span class="badge bg-success">Disponible</span>
+                <span class="badge bg-success">
+                    Disponible
+                </span>
             }
             else
             {
-                <span class="badge bg-danger">Agotado</span>
+                <span class="badge bg-danger">
+                    Agotado
+                </span>
             }
+
         </div>
-        <a asp-controller="Productos" asp-action="Detalle" asp-route-id="@Model.Id" class="btn btn-primary mt-auto">Ver detalle</a>
+
+        <a asp-controller="Products"
+           asp-action="Details"
+           asp-route-id="@Model.Id"
+           class="btn btn-primary mt-auto">
+
+            Ver detalle
+
+        </a>
+
     </div>
+
 </div>

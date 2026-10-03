@@ -1,21 +1,25 @@
-using TechStore.Interfaces;
-using TechStore.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using TechStore.Interfaces;
+using TechStore.Models;
 
 namespace TechStore.Data.Storage
 {
     public class LocalProductImageStorage : IProductImageStorage
     {
-        private const string ImagesDirectory = "images/products";
+        private const string ImagesDirectory = "Images/Products";
+
         private readonly IWebHostEnvironment _environment;
 
-        public LocalProductImageStorage(IWebHostEnvironment environment)
+        public LocalProductImageStorage(
+            IWebHostEnvironment environment)
         {
             _environment = environment;
         }
 
-        public async Task<StoredProductImage> SaveAsync(Guid productId, IFormFile imageFile)
+        public async Task<StoredProductImage> SaveAsync(
+            Guid productId,
+            IFormFile imageFile)
         {
             string productImagesDirectory = Path.Combine(
                 _environment.WebRootPath,
@@ -24,17 +28,27 @@ namespace TechStore.Data.Storage
 
             Directory.CreateDirectory(productImagesDirectory);
 
-            int imageNumber = Directory.GetFiles(productImagesDirectory).Length + 1;
-            string extension = Path.GetExtension(imageFile.FileName).ToLowerInvariant();
+            int imageNumber =
+                Directory.GetFiles(productImagesDirectory).Length + 1;
+
+            string extension =
+                Path.GetExtension(imageFile.FileName)
+                    .ToLowerInvariant();
+
             if (string.IsNullOrEmpty(extension))
             {
                 extension = ".webp";
             }
 
-            string fileName = $"{imageNumber:D2}{extension}";
-            string filePath = Path.Combine(productImagesDirectory, fileName);
+            string fileName =
+                $"{imageNumber:D2}{extension}";
 
-            await using (var stream = new FileStream(filePath, FileMode.Create))
+            string filePath = Path.Combine(
+                productImagesDirectory,
+                fileName);
+
+            await using (var stream =
+                new FileStream(filePath, FileMode.Create))
             {
                 await imageFile.CopyToAsync(stream);
             }
@@ -56,7 +70,9 @@ namespace TechStore.Data.Storage
                 File.Delete(filePath);
             }
 
-            string? directoryPath = Path.GetDirectoryName(filePath);
+            string? directoryPath =
+                Path.GetDirectoryName(filePath);
+
             if (directoryPath != null &&
                 Directory.Exists(directoryPath) &&
                 Directory.GetFiles(directoryPath).Length == 0)

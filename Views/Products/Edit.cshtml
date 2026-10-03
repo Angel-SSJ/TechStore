@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Editar producto";
+
     var categories = ViewBag.Categories as IEnumerable<TechStore.Models.Category>
         ?? Enumerable.Empty<TechStore.Models.Category>();
 }
@@ -12,74 +13,139 @@
 {
     <div class="alert alert-success alert-dismissible fade show" role="alert">
         @TempData["Success"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+                aria-label="Cerrar">
+        </button>
     </div>
 }
+
 @if (TempData["Error"] != null)
 {
     <div class="alert alert-danger alert-dismissible fade show" role="alert">
         @TempData["Error"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+                aria-label="Cerrar">
+        </button>
     </div>
 }
 
-<form asp-action="Edit" method="Post">
+<form asp-action="Edit"
+      asp-route-id="@Model.Id"
+      method="post"
+      enctype="multipart/form-data">
+
     <div class="row">
         <div class="col-md-12">
+
             <div class="mb-5">
                 <label asp-for="Name">Nombre</label>
-                <input asp-for="Name" class="form-control"/>
-                <span asp-validation-for="Name"></span>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
             </div>
+
             <div class="mb-5">
                 <label asp-for="Description">Descripción</label>
                 <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description"></span>
+                <span asp-validation-for="Description"
+                      class="text-danger"></span>
             </div>
+
             <div class="mb-5">
                 <label asp-for="Price">Precio</label>
                 <input asp-for="Price" class="form-control" />
-                <span asp-validation-for="Price"></span>
+                <span asp-validation-for="Price"
+                      class="text-danger"></span>
             </div>
+
             <div class="mb-5">
                 <label asp-for="Stock">Existencias</label>
-                <input asp-for="Stock" class="form-control"/>
-                <span asp-validation-for="Stock"></span>
+                <input asp-for="Stock" class="form-control" />
+                <span asp-validation-for="Stock"
+                      class="text-danger"></span>
             </div>
 
             <div class="form-check mb-5">
-                <input asp-for="Featured" class="form-check-input" />
-                <label asp-for="Featured" class="form-check-label">Destacado</label>
+                <input asp-for="Featured"
+                       class="form-check-input" />
+
+                <label asp-for="Featured"
+                       class="form-check-label">
+                    Destacado
+                </label>
             </div>
 
             <div class="form-check mb-5">
-                <input asp-for="IsActive" class="form-check-input" />
-                <label asp-for="IsActive" class="form-check-label">Activo</label>
+                <input asp-for="IsActive"
+                       class="form-check-input" />
+
+                <label asp-for="IsActive"
+                       class="form-check-label">
+                    Activo
+                </label>
             </div>
 
             <div class="mb-5">
                 <label>Categorías</label>
-                <select name="selectedCategoryIds" multiple class="form-control">
+
+                <select name="selectedCategoryIds"
+                        multiple
+                        class="form-control">
+
                     @foreach (var cat in categories)
                     {
-                        var selected = Model.Categories.Any(productCategory => productCategory.Id == cat.Id);
-                        <option value="@cat.Id" selected="@selected">@cat.Name</option>
+                        var selected = Model.Categories != null &&
+                            Model.Categories.Any(
+                                productCategory =>
+                                    productCategory.Id == cat.Id);
+
+                        if (selected)
+                        {
+                            <option value="@cat.Id" selected>
+                                @cat.Name
+                            </option>
+                        }
+                        else
+                        {
+                            <option value="@cat.Id">
+                                @cat.Name
+                            </option>
+                        }
                     }
+
                 </select>
             </div>
 
             <div class="mb-5">
                 <label>Imágenes</label>
-                <input type="file" name="images" multiple class="form-control" />
+
+                <input type="file"
+                       name="images"
+                       multiple
+                       accept="image/*"
+                       class="form-control" />
             </div>
 
             <div class="d-flex gap-2">
-               <div class="mb-5">
-                    <button type="submit" class="btn btn-success">Guardar cambios</button>
-                    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
-               </div>
+                <div class="mb-5">
+
+                    <button type="submit"
+                            class="btn btn-success">
+                        Guardar cambios
+                    </button>
+
+                    <a asp-action="Index"
+                       class="btn btn-secondary">
+                        Cancelar
+                    </a>
+
+                </div>
             </div>
 
         </div>
     </div>
+
 </form>
