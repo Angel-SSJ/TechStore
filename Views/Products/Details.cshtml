@@ -35,8 +35,13 @@
     <div class="col-md-7">
 
         <div class="card">
+
             <div class="card-body shadow-sm">
-                <h3 style="color: midnightblue;" class="fw-bold text-uppercase">@Model.Name</h3>
+
+                <h3 style="color: midnightblue;"
+                    class="fw-bold text-uppercase">
+                    @Model.Name
+                </h3>
 
                 <p class="text-muted">
                     @Model.Description
@@ -95,7 +100,8 @@
 
                     <dd class="col-sm-8">
 
-                        @if (Model.Categories != null && Model.Categories.Any())
+                        @if (Model.Categories != null &&
+                             Model.Categories.Any())
                         {
                             @foreach (var cat in Model.Categories)
                             {
@@ -114,14 +120,16 @@
                     </dd>
 
                 </dl>
+
             </div>
+
         </div>
 
     </div>
 
 </div>
 
-<div class="d-flex gap-3 mt-3">
+<div class="d-flex gap-3 mt-3 flex-wrap">
 
     <a class="btn btn-primary"
        asp-action="Edit"
@@ -139,11 +147,14 @@
         <form asp-action="Deactivate"
               method="post"
               asp-route-id="@Model.Id"
-              class="d-inline">
+              class="d-inline swal-delete-form">
 
             <button type="submit"
                     class="btn btn-danger">
+
+                <i class="bi bi-x-circle me-1"></i>
                 Desactivar
+
             </button>
 
         </form>
@@ -157,7 +168,10 @@
 
             <button type="submit"
                     class="btn btn-success">
+
+                <i class="bi bi-arrow-counterclockwise me-1"></i>
                 Reactivar
+
             </button>
 
         </form>
